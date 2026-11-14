@@ -1,0 +1,73 @@
+# ---- Run outputs, logs and experiment tracking ----
+outputs/
+checkpoints/
+logs/
+log/
+wandb/
+mlruns/
+swanlog/
+ray_results/
+multirun/
+*.log
+slurm-*.out
+nohup.out
+
+# ---- Data and model weights ----
+data/
+dataset/
+datasets/
+models/
+*.parquet
+*.jsonl
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+*.gguf
+*.npy
+*.npz
+*.index
+*.faiss
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# ---- Secrets and local environment ----
+.env
+.env.*
+.envrc
+*.pem
+*.key
+.netrc
+
+# ---- Private notes and local tooling (never part of the public repo) ----
+notes/
+CLAUDE.md
+.claude/
+*.pdf
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# ---- Editors and OS ----
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store

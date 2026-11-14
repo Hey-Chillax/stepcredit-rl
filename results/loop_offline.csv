@@ -1,0 +1,4 @@
+stage,first_step,last_step,noop_share,noop_share_failed,noop_share_solved,noops_per_failed_traj,all_failed_rows_with_signal
+early,1,10,46.9,48.0,18.9,9.2,97
+middle,41,50,35.2,37.0,17.7,7.4,94
+late,141,150,12.1,14.0,10.6,2.8,82

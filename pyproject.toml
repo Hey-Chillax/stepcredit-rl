@@ -1,0 +1,94 @@
+# -------------------------------
+# project - training environment (uv)
+# -------------------------------
+# The repo is not installed as a package (run everything from the repo root); this table only declares the
+# training environment, pinned in uv.lock. README.md (Installation) has the install commands.
+[project]
+name = "stepcredit-rl"
+version = "0.1.0"
+requires-python = "==3.12.*"
+dependencies = [
+    "torch==2.8.0",       # pinned by vllm 0.11.0 (PyPI wheel is cu128); the flash-attn wheel is built for it
+    "vllm==0.11.0",       # verl 0.7.0 supports vllm>=0.8.5,<=0.12.0
+    "verl==0.7.0",
+    "flash-attn==2.8.3",  # prebuilt wheel, see [tool.uv.sources]
+    "transformers<5",     # vllm 0.11.0 sets no upper bound
+    "datasets>=4",        # otherwise the resolver backtracks to datasets 2.14.4 (incompatible with new fsspec)
+]
+
+[dependency-groups]
+# Download tooling (hf-transfer is used when HF_HUB_ENABLE_HF_TRANSFER=1)
+tools = ["modelscope", "hf-transfer"]
+# Recipe extras, mirroring recipes/<task>/requirements.txt
+gsm8k = ["datasets", "pandas", "pyarrow"]
+hotpotqa = ["datasets", "pandas", "pyarrow", "faiss-cpu>=1.7.4", "FlagEmbedding>=1.2.0"]
+alfworld = ["pandas", "pyarrow", "alfworld==0.4.2", "textworld"]
+webshop = [
+    "pandas", "pyarrow", "httpx", "fastapi", "gunicorn", "uvicorn", "rank-bm25", "pydantic", "tqdm",
+    "pyserini", "pyjnius",
+    # Lazily imported by env/engine.py for reward matching; without them it silently falls back to cruder matching
+    "thefuzz", "spacy", "en-core-web-sm",
+]
+paper-search = ["httpx", "pydantic", "numpy", "hydra-core", "omegaconf", "tqdm", "python-dotenv"]
+
+[tool.uv]
+package = false  # install dependencies only, never the repo itself
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]  # Linux x86_64 GPU machines only
+exclude-newer = "2026-03-23T00:00:00Z"  # keeps dependency resolution in the verl 0.7.0 era
+
+[tool.uv.sources]
+flash-attn = { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.8cxx11abiTRUE-cp312-cp312-linux_x86_64.whl" }
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" }
+
+# -------------------------------
+# tool.ruff - Linting configuration
+# -------------------------------
+[tool.ruff]
+# Note: While the formatter will attempt to format lines such that they remain within the line-length,
+# it isn't a hard upper bound, and formatted lines may exceed the line-length.
+line-length = 120
+
+[tool.ruff.lint]
+isort = {known-first-party = ["agent_r1", "verl"]}
+# c.f. https://github.com/vllm-project/vllm/blob/ce8d6b75fc0586045df75ee1568a5b5f9957251b/pyproject.toml
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # isort
+    "I",
+    "G",
+]
+ignore = [
+    # star imports
+    "F405", "F403",
+    # lambda expression assignment
+    "E731",
+    # Loop control variable not used within loop body
+    "B007",
+    # f-string format
+    "UP032",
+    # `.log()` statement uses f-string
+    "G004",
+    # X | None for type annotations
+    "UP045",
+    # deprecated import
+    "UP035",
+]
+
+# -------------------------------
+# tool.mypy - typechecking config
+# -------------------------------
+[tool.mypy]
+pretty = true
+ignore_missing_imports = true
+explicit_package_bases = true
+follow_imports = "skip"
+
+# Blanket silence
+ignore_errors = true

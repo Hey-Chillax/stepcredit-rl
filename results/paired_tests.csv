@@ -1,0 +1,4 @@
+test,split,items,both_correct,only_a,only_b,a_correct,b_correct,p
+alfworld_steplevel_vs_grpo,valid_seen,140,90,26,9,116,99,0.006
+alfworld_steplevel_vs_grpo,valid_unseen,134,73,21,23,94,96,0.8804
+hotpotqa_em_vs_shaped,all,1000,496,49,35,545,531,0.1557

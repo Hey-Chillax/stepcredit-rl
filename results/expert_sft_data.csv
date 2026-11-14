@@ -1,0 +1,7 @@
+family,train_tasks,expert_solved,sft_rows
+pick_and_place,790,666,5437
+pick_clean_then_place,650,465,5712
+pick_cool_then_place,533,386,4683
+pick_heat_then_place,459,328,4520
+look_at_obj_in_light,308,245,2265
+pick_two_obj_and_place,813,55,864
