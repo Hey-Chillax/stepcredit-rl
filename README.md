@@ -8,6 +8,8 @@ expert demonstrations to supervised fine-tuning, multi-turn agentic RL and paire
 includes tasks for ALFWorld (embodied text games), HotpotQA (multi-hop QA with a local search tool), WebShop and GSM8K
 tool use.
 
+Results and analysis are in the [project report](https://hey-chillax.github.io/projects/stepcredit-rl.html).
+
 ## Overview
 
 **Pipeline**
@@ -20,6 +22,13 @@ tool use.
 4. **Paired evaluation.** Greedy validation writes per-item records, and an exact McNemar test compares two runs on
    the same items.
 
+<p align="center">
+  <img src="docs/figures/scr-pipeline.png" width="100%" alt="StepCredit-RL pipeline: expert demonstrations, SFT, multi-turn RL with StepCredit-RL and paired evaluation, with ALFWorld success after each stage">
+</p>
+
+*The pipeline, with ALFWorld success (seen / unseen) after each stage and the training time on 2 × A100. Right: the
+two-object task, which the expert rarely solves, goes from 27% after SFT to 95% after 100 RL steps.*
+
 **Training system**
 
 - A Ray driver (veRL) runs rollout, reward, advantage estimation and FSDP policy updates; vLLM servers generate the
@@ -29,6 +38,16 @@ tool use.
 - Mini-batches keep all steps of a trajectory together, and the policy loss is normalized over the tokens of the batch.
 
 **Algorithms and rewards**
+
+<p align="center">
+  <img src="docs/figures/scr-steplevel.png" width="720" alt="StepCredit-RL: a group of rollouts of the same task; steps from the same environment state are compared by the return that followed, and this step-level advantage is added to the episode-level advantage">
+</p>
+
+*StepCredit-RL in one picture (illustration). ① The agent acts through tool calls; each step is one training sample.
+② A group of N = 8 rollouts of the same task; s₂ is the same environment state, reached in three of them, and the
+other five never reach it. ③ Episode level: each rollout's outcome against the mean of all eight. ④ Step level: the
+steps taken from s₂ against the mean return of those steps. ⑤ The two advantages are added for the policy-gradient
+update.*
 
 - Trajectory-level group advantages (GRPO, RLOO, REINFORCE) and a step-level relative advantage [4] that compares
   steps taken from the same environment state across rollouts. Both are critic-free; PPO with a critic is supported
@@ -149,6 +168,7 @@ examples/          launch scripts per task and algorithm; slurm/ for Slurm clust
 scripts/           train.sh, sft_rl_alfworld.sh
 tools/             evaluation, W&B export, result tables, figures
 results/ assets/   training and validation metrics, figures
+docs/figures/      figures in this README
 tests/             unit tests
 ```
 
